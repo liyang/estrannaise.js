@@ -199,7 +199,8 @@ export function e2Curve3C(t, dose, d, k1, k2, k3, Ds = 0.0, D2 = 0.0, steadystat
             } else if (k1 != k2 && k2 == k3) {
                 ret += dose * d * k1 * k2 * (Math.exp(-k1 * t) - Math.exp(-k2 * t) * (1 - (k1 - k2) * t)) / (k1 - k2) / (k1 - k2);
             } else {
-                ret += dose * d * k1 * k2 * (Math.exp(-k1 * t) / (k1 - k2) / (k1 - k3) - Math.exp(-k2 * t) / (k1 - k2) / (k2 - k3) + Math.exp(-k3 * t) / (k1 - k3) / (k2 - k3));
+                let expkt = (k, kx, ky) => Math.exp(-k * t) / ( (k - kx) * (k - ky) );
+                ret += dose * d * k1 * k2 * (expkt(k1, k2, k3) + expkt(k2, k3, k1) + expkt(k3, k1, k2));
             }
         }
         if (isNaN(ret)) {
