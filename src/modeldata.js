@@ -46,6 +46,7 @@ export const modelList = {
     'EV im': {units: 'mg', description: 'Estradiol Valerate, Intramuscular'},
     'EEn im': {units: 'mg', description: 'Estradiol Enanthate, Intramuscular'},
     'EC im': {units: 'mg', description: 'Estradiol Cypionate, Intramuscular'},
+    'EUn im lyh': {units: 'mg', description: 'Estradiol Undecylate, Intramuscular (personal for lyh)'},
     'EUn im': {units: 'mg', description: 'Estradiol Undecylate, Intramuscular'},
     'EUn casubq': {units: 'mg', description: 'Estradiol Undecylate in Castor oil, Subcutaneous'},
     'patch tw': {units: 'mcg/day', description: 'Patch, twice weekly application'},
@@ -56,17 +57,38 @@ export const modelList = {
  * PK parameters for the different models
  */
 export const PKParameters = {
-    "EV im": [478.0, 0.236, 4.85, 1.24],
-    "EEn im": [191.4, 0.119, 0.601, 0.402],
-    "EC im": [246.0, 0.0825, 3.57, 0.669],
-    "EB im": [1893.1, 0.67, 61.5, 4.34],
-    "EUn im": [471.5, 0.01729, 6.528, 2.285],
-    "EUn casubq": [16.15, 0.046, 0.022, 0.101],
-    "patch tw": [16.792, 0.283, 5.592, 4.3],
-    "patch ow": [59.481, 0.107, 7.842, 5.193],
+    "EB im":            [1893.1,    0.67,       61.5,       4.34],
+    "EV im":            [478.0,     0.236,      4.85,       1.24],
+    "EC im":            [246.0,     0.0825,     3.57,       0.669],
+    "EEn im":           [191.4,     0.119,      0.601,      0.402],
+    "EUn casubq":       [16.15,     0.046,      0.022,      0.101],
+    "EUn im lyh":
+
+                        // best fit for 2025-11-11 ≤ samples ≤ 2026-01-20
+                        [163.0,     1.142,      0.069,      0.271],
+
+    "EUn im":           [471.5,     0.01729,    6.528,      2.285],
+    "patch tw":         [16.792,    0.283,      5.592,      4.3],
+    "patch ow":         [59.481,    0.107,      7.842,      5.193],
 };
 
 export let mcmcSamplesPK = {
+    "EUn im lyh": [
+
+                        // best fit for 2025-12-16 ≤ samples ≤ 2026-01-20; not enough samples yet?
+                        [182.1,     0.1126,     0.1316,     0.2218],
+
+                        // best fit for 2025-11-11 ≤ samples ≤ 2026-01-20
+                        [163.0,     1.142,      0.069,      0.271],
+
+                        // reasonable fit by eye for samples ≤ 2026-01-20
+                        [162.0,     0.620,      0.080,      0.275],
+
+                        // random numbers
+                        [255.0,     0.080,      0.360,      0.450],
+                        [170.0,     0.080,      0.620,      0.300]
+    ],
+
     "EV im": [
         [881.2, 0.177, 2.58, 1.91],
         [862.7, 0.198, 2.86, 2.01],
