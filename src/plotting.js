@@ -10,6 +10,7 @@ import {
   PKFunctions,
   PKParameters,
   PKRandomFunctions,
+  getPKQuantities3C,
   terminalEliminationTime3C
 } from './models.js';
 
@@ -285,12 +286,19 @@ export function plotCurves(dataset, options = generatePlottingOptions(), returnS
                 stroke: entry.color ? entry.color : wongPalette(5 + idx),
                 strokeWidth: options.strokeWidth
             }));
+
+            let pkqs = getPKQuantities3C(entry.time, ...PKParameters[entry.model]);
             tipMarks.unshift(Plot.tip(steadyStateCurve, Plot.pointerX({
                 x: 'Time', y: 'E2',        /* lmao even */
                 title: p => `~~~time: ${numberToDayHour(p.Time)}
                              ~~~~~e₂: ${p.E2.toFixed(precision)} ${units}
                              average: ${entry.model.includes('patch') ? 'unavailable' : e2ssAverage3C(options.fudgeFactor * conversionFactor * entry.dose, entry.time, ...PKParameters[entry.model]).toFixed(precision)} ${entry.model.includes("patch") ? '' : units}
-                             ~trough: ${PKFunctions(options.fudgeFactor * conversionFactor)[entry.model](0.0, entry.dose, true, entry.time).toFixed(precision)} ${units}`.replace(/(\n+)(\s*)/g, (_, p, __) => p).replace(/~/g, ' '),
+                             ~trough: ${(options.fudgeFactor * conversionFactor * entry.dose * pkqs.Cmin).toFixed(precision)} ${units}
+                             ~~~Cmax: ${(options.fudgeFactor * conversionFactor * entry.dose * pkqs.Cmax).toFixed(precision)} ${units}
+                             ~~~Tmax: ${numberToDayHour(pkqs.Tmax)}
+                             ~~Thalf: ${numberToDayHour(pkqs.halfLife)}
+                             ~~Thabs: ${numberToDayHour(pkqs.halfLifeAbsorption)}
+                    `.replace(/(\n+)(\s*)/g, (_, p, __) => p).replace(/~/g, ' '),
                 fill: options.backgroundColor,
                 fillOpacity: 0.618,                                                                                               /* i mean just look at it */
                 stroke: options.strongForegroundColor

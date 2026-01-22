@@ -316,18 +316,22 @@ function goldenSectionSearch(f, a, b, tolerance = 1e-5, maxIterations = 100) {
     return (b + a) / 2;
 }
 
-export function getPKQuantities3C(_d, k1, k2, k3) {
-    let terminalTime = terminalEliminationTime3C(1.0, k1, k2, k3);
-    let Tmax = goldenSectionSearch(t => -e2Curve3C(t, 1.0, 1.0, k1, k2, k3), 0, terminalTime);
-    let Cmax = e2Curve3C(Tmax, 1.0, 1.0, k1, k2, k3);
-    let Chalf = Cmax / 2;
-    let Thalf = goldenSectionSearch(t => (e2Curve3C(t, 1.0, 1.0, k1, k2, k3) - Chalf)**2, Tmax, terminalTime);
-    let ThalfAbsorption = goldenSectionSearch(t => (e2Curve3C(t, 1.0, 1.0, k1, k2, k3) - Chalf)**2, 0, Tmax);
+// Under steady state vs one-shot, Tmax is earlier & Cmax is higher.
+// Which do we actually want to know?
+export function getPKQuantities3C(Tdose, d, k1, k2, k3) {
+/*    let terminalTime = terminalEliminationTime3C(d, k1, k2, k3);*/
+    let e2 = t => e2Curve3C(t, 1.0, d, k1, k2, k3, 0, 0, true, Tdose);
+    let Tmax = goldenSectionSearch(t => -e2(t), 0, Tdose);
+    let Cmin = e2(0);
+    let Cmax = e2(Tmax);
+    let Chalf = (Cmin + Cmax) / 2;
+    let Thalf = goldenSectionSearch(t => (e2(t) - Chalf)**2, Tmax, Tdose);
+    let ThalfAbsorption = goldenSectionSearch(t => (e2(t) - Chalf)**2, 0, Tmax);
     let halfLife = Thalf - Tmax;
     let halfLifeAbsorption = ThalfAbsorption;
-    return { Tmax: Tmax, Cmax: d * Cmax, halfLife: halfLife, halfLifeAbsorption: halfLifeAbsorption };
+    return { Tmax: Tmax, Cmin: Cmin, Cmax: Cmax, halfLife: halfLife, halfLifeAbsorption: halfLifeAbsorption };
 }
 
-export function getPKQuantities(model) {
-    return getPKQuantities3C(...PKParameters[model]);
-}
+/*export function getPKQuantities(model, T) {*/
+/*    return getPKQuantities3C(...PKParameters[model], T);*/
+/*}*/
