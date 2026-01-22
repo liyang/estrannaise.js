@@ -236,7 +236,10 @@ export function esSingleDose3C(t, dose, d, k1, k2, _k3, Ds = 0.0) {
 
 
 export function e2SteadyState3C(t, dose, T, d, k1, k2, k3) {
-    return dose * d * k1 * k2 * (Math.exp(-k1 * (t - T * Math.floor(t / T))) / (1 - Math.exp(-k1 * T)) / (k1 - k2) / (k1 - k3) - Math.exp(-k2 * (t - T * Math.floor(t / T))) / (1 - Math.exp(-k2 * T)) / (k1 - k2) / (k2 - k3) + Math.exp(-k3 * (t - T * Math.floor(t / T))) / (1 - Math.exp(-k3 * T)) / (k1 - k3) / (k2 - k3));
+    let tModT = t - T * Math.floor(t / T);
+    let expkt = (k, kx, ky) => Math.exp(-k * tModT) /
+            ( (k - kx) * (k - ky) * (1 - Math.exp(-k * T)) );
+    return dose * d * k1 * k2 * (expkt(k1, k2, k3) + expkt(k2, k3, k1) + expkt(k3, k1, k2));
 }
 
 export function e2Patch3C(t, dose, d, k1, k2, k3, W, steadystate = false, T = 0.0) {
